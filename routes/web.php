@@ -12,6 +12,7 @@
 */
 
 
+// some test comment
 
 Auth::routes([
 	'reset' => false,
