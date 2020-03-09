@@ -12,7 +12,7 @@
 */
 
 
-// I do not need this line!
+// I almost done
 
 Auth::routes([
 	'reset' => false,
