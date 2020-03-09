@@ -12,7 +12,7 @@
 */
 
 
-// some test comment. it is my second test comment!
+// I do not need this line!
 
 Auth::routes([
 	'reset' => false,
