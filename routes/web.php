@@ -12,7 +12,7 @@
 */
 
 
-// I almost done
+// I almost done 2
 
 Auth::routes([
 	'reset' => false,
