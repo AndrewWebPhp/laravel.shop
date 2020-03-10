@@ -15,7 +15,7 @@
 </div>
 
     <div class="thumbnail">
-        <img src="{{Storage::url($product->image)}}" alt="iPhone X 64GB">
+        <img src="{{Storage::url($product->image)}}" alt="">
         <div class="caption">
 
             <h3>{{$product->name}}</h3>
@@ -27,7 +27,13 @@
 
 
             <form action="{{ route('basket-add', $product) }}" method="post">
-                <button type="submit" class="btn btn-primary" role="button">В корзину</button>
+
+                @if($product->isAvailable())
+                    <button type="submit" class="btn btn-primary" role="button">В корзину</button>
+                @else
+                    <span>Нет в наличии</span>
+                @endif
+
                 <a href="{{ route('product', [isset($category) ? $category->code : $product->category->code, $product->code]) }}" class="btn btn-default" role="button">Подробнее</a>
                 @csrf
             </form>

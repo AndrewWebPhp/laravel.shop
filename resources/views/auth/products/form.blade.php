@@ -126,14 +126,14 @@
                     </div>
 
 
-                    {{--<div class="input-group row">
+                    <div class="input-group row">
                         <label for="count" class="col-sm-2 col-form-label">Кол-во: </label>
                         <div class="col-sm-2">
                             @include('auth.layouts.error', ['fieldName' => 'count'])
                             <input type="text" class="form-control" name="count" id="count"
                                    value="@isset($product){{ $product->count }}@endisset">
                         </div>
-                    </div>--}}
+                    </div>
 
                     <br>
 

@@ -65,9 +65,9 @@ class MainController extends Controller
 		]);
 	}
 
-	public function product($category, $product = null){
+	public function product($category, $productCode){
 
-		dump($product);
+		$product = Product::withTrashed()->byCode($productCode)->first(); // Scope
 
 		return view('product', [
 			'product' => $product

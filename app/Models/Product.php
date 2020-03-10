@@ -3,11 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
 
-	protected $fillable = ['name', 'code', 'price', 'category_id', 'description', 'image', 'hit', 'new', 'recommend'];
+	/*
+	 * Трейт. Трейт - расширение класса.
+	 * Мы добавляем функционал класса, который уже где-то реализован.
+	 */
+	use SoftDeletes;
+
+	protected $fillable = ['name', 'code', 'price', 'category_id', 'description', 'image', 'hit', 'new', 'recommend', 'count'];
 
     /*public function getCategory(){
     	//$category = Category::where('id', $this->category_id)->first();
@@ -48,6 +55,11 @@ class Product extends Model
 	}
 
 	// Scope
+	public function scopeByCode($query, $code)
+	{
+		return $query->where('code', $code);
+	}
+	// Scope
 	public function scopeHit($query)
 	{
 		return $query->where('hit', 1);
@@ -77,6 +89,10 @@ class Product extends Model
 	public function isRecommend()
     {
 	    return $this->recommend === 1;
+    }
+	public function isAvailable()
+    {
+		return !$this->trashed() && $this->count > 0;
     }
 
 }

@@ -11,7 +11,7 @@ class OrderController extends Controller
 
 	public function index()
 	{
-		$orders = Order::active()->paginate(3); // scope
+		$orders = Order::active()->paginate(10); // scope
 
 		return view('auth.orders.index', [
 			'orders' => $orders
@@ -20,8 +20,11 @@ class OrderController extends Controller
 
 	public function show(Order $order)
 	{
+		$products = $order->products()->withTrashed()->get();
+
 		return view('auth.orders.show', [
-			'order' => $order
+			'order' => $order,
+			'products' => $products,
 		]);
 	}
 }
