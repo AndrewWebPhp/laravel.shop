@@ -2,9 +2,11 @@
 
 namespace App\Classes;
 
+use App\Mail\OrderCreated;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class Basket
 {
@@ -36,10 +38,17 @@ class Basket
 
 		foreach ($this->order->products as $orderProduct)
 		{
-
-			if( $orderProduct->count < $this->order->products()->where('product_id', $orderProduct->id)->first()->pivot ) {
+			if( $orderProduct->count < $this->getPivotRow($orderProduct)->count ) {
 				return false;
 			}
+
+			if($updateCount) {
+				$orderProduct->count -= $this->getPivotRow($orderProduct)->count;
+			}
+		}
+
+		if($updateCount) {
+			$this->order->products->map->save();
 		}
 
 		return true;
@@ -51,12 +60,20 @@ class Basket
 		return $this->order;
 	}
 
-
-	public function saveOrder($name, $phone)
+	public function getPivotRow($product)
 	{
-		if( !$this->countAvailable() ) {
+		return $this->order->products()->where('product_id', $product->id)->first()->pivot;
+	}
+
+
+	public function saveOrder($name, $phone, $email)
+	{
+		if( !$this->countAvailable(true) ) {
 			return false;
 		}
+
+		// Send an Email message
+		Mail::to($email)->send( new OrderCreated($name, $this->getOrder()) );
 
 		return $this->order->saveOrder($name, $phone);
 	}

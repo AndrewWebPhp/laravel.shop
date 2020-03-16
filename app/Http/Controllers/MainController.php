@@ -67,7 +67,7 @@ class MainController extends Controller
 
 	public function product($category, $productCode){
 
-		$product = Product::withTrashed()->byCode($productCode)->first(); // Scope
+		$product = Product::withTrashed()->byCode($productCode)->firstOrFail(); // Scope
 
 		return view('product', [
 			'product' => $product
