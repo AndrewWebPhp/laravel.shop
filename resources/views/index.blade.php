@@ -7,7 +7,7 @@
     <div class="starter-template">
         <h1>Все товары</h1>
 
-        <form method="GET" action="{{route("index")}}">
+        <form method="GET" class="filters_form" action="{{route("index")}}">
 
             <div class="filters row">
 
