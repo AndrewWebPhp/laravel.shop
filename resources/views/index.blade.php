@@ -4,8 +4,10 @@
 
 @section('content')
 
+
+
     <div class="starter-template">
-        <h1>Все товары</h1>
+        <h1>Всего товаров: {{ $products->count() }}</h1>
 
         <form method="GET" class="filters_form" action="{{route("index")}}">
 
