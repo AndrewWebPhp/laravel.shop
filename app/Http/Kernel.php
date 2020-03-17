@@ -51,6 +51,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'set_locale' => \App\Http\Middleware\SetLocale::class,
         'is_admin' => \App\Http\Middleware\CheckIsAdmin::class,
         'basket_not_empty' => \App\Http\Middleware\BasketIsNotEmpty::class,
         'auth' => \App\Http\Middleware\Authenticate::class,

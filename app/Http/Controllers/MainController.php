@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class MainController extends Controller
 {
@@ -87,5 +88,18 @@ class MainController extends Controller
 		return redirect()->back()->with('success', 'Мы дадим Вам занть, когда товар появится на складе.');
 	}
 
+
+	public function changeLocale($locale)
+	{
+		//dd( App::getLocale() );
+
+		$availableLocales = ['ru', 'en'];
+		if (!in_array($locale, $availableLocales)) {
+			$locale = config('app.locale'); // достаем значение из Config. config() - хелпер
+		}
+		session(['locale' => $locale]); // записываем в ссесию локаль
+		App::setLocale($locale);
+		return redirect()->back();
+	}
 
 }

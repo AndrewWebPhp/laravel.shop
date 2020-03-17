@@ -2,15 +2,15 @@
 
     <div class="labels">
     @if($product->isNew())
-        <span class="badge badge-success">Новинка</span>
+        <span class="badge badge-success">{{ __('main.properties.new') }}</span>
     @endif
 
     @if($product->isRecommend())
-        <span class="badge badge-warning">Рекоммендуем</span>
+        <span class="badge badge-warning">{{ __('main.properties.recommend') }}</span>
     @endif
 
     @if($product->isHit())
-        <span class="badge badge-danger">Хит</span>
+        <span class="badge badge-danger">{{ __('main.properties.hit') }}</span>
     @endif
 </div>
 
