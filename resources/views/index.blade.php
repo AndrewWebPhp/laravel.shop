@@ -7,7 +7,7 @@
 
 
     <div class="starter-template">
-        <h1>Всего товаров: {{ $products->count() }}</h1>
+        <h1>Всего товаров: {{ $allProductsCount }}</h1>
 
         <form method="GET" class="filters_form" action="{{route("index")}}">
 

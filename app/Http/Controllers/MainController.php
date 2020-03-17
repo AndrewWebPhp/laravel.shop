@@ -40,8 +40,11 @@ class MainController extends Controller
 
     	$products = $productsQuery->paginate(6)->withPath( "?" . $request->getQueryString() );
 
+	    $allProductsCount = Product::count();
+
 	    return view('index', [
-	    	'products' => $products
+	    	'products' => $products,
+	    	'allProductsCount' => $allProductsCount
 	    ]);
     }
 
