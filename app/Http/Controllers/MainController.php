@@ -21,24 +21,28 @@ class MainController extends Controller
 
 	    //$productsQuery = Product::query(); // аналог Product::get()
 	    $productsQuery = Product::with('category'); // with() заменяет метотд query()
+	    $productsFilterUrl = [];
 
 	    if( $request->filled('price_from') ){ // если поле заполненно
 		    $productsQuery->where('price', '>=', $request->price_from);
+		    $productsFilterUrl['price_from'] = $request->price_from;
 	    }
 	    if( $request->filled('price_to') ){
 		    $productsQuery->where('price', '<=', $request->price_to);
+		    $productsFilterUrl['price_to'] = $request->price_to;
 	    }
 	    foreach (['new', 'hit', 'recommend'] as $field) {
 		    if( $request->has( $field ) ){
 			    //$productsQuery->where($field, 1);
 			    $productsQuery->$field(); // scope
+			    $productsFilterUrl[$field] = 'on';
 		    }
 	    }
 
-
 	    //dd($request->getQueryString());
+    	//$products = $productsQuery->paginate(6)->withPath( "?" . $request->getQueryString() );
+    	$products = $productsQuery->paginate(6)->appends($productsFilterUrl);
 
-    	$products = $productsQuery->paginate(6)->withPath( "?" . $request->getQueryString() );
 
 	    $allProductsCount = Product::count();
 
