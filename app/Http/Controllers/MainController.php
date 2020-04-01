@@ -19,6 +19,8 @@ class MainController extends Controller
 
 	    //\Debugbar::info('my info');
 
+
+	    // some test comment
 	    //$productsQuery = Product::query(); // аналог Product::get()
 	    $productsQuery = Product::with('category'); // with() заменяет метотд query()
 	    $productsFilterUrl = [];
