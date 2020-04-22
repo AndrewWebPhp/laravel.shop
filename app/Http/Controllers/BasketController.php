@@ -49,7 +49,7 @@ class BasketController extends Controller
 	{
 		(new Basket())->removeProduct($product);
 
-		Order::changeFullSum(-$product->price);
+		//Order::changeFullSum(-$product->price);
 		session()->flash('warning', 'Товар ' . $product->name .' был удален из корзины');
 
 		return redirect()->route('basket');
@@ -87,7 +87,6 @@ class BasketController extends Controller
 			session()->flash('warning', 'Товар в большем количестве не доступен для заказа!');
 		}
 
-		Order::eraseOrderSum();
 
 		return redirect()->route('index');
 	}

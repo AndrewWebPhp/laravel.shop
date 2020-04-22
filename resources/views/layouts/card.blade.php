@@ -18,9 +18,9 @@
         <img src="{{Storage::url($product->image)}}" alt="">
         <div class="caption">
 
-            <h3>{{$product->name}}</h3>
+            <h3>{{$product->__('name')}}</h3>
 
-            <p>{{$product->price}} руб.</p>
+            <p>{{$product->price}} {{ App\Services\CurrencyConversion::getCurrencySymbol() }}</p>
 
             {{--<p>{{$product->getCategory()->name}}</p>--}}
             <p>{{isset($category) ? $category->name : $product->category->name}}</p>

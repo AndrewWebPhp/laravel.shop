@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductsFilterRequest;
 use App\Http\Requests\SubscriptionRequest;
 use App\Models\Category;
+use App\Models\Currency;
 use App\Models\Product;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
@@ -44,6 +45,7 @@ class MainController extends Controller
 	    //dd($request->getQueryString());
     	//$products = $productsQuery->paginate(6)->withPath( "?" . $request->getQueryString() );
     	$products = $productsQuery->paginate(6)->appends($productsFilterUrl);
+
 
 
 	    $allProductsCount = Product::count();
@@ -108,6 +110,14 @@ class MainController extends Controller
 		}
 		session(['locale' => $locale]); // записываем в ссесию локаль
 		App::setLocale($locale);
+		return redirect()->back();
+	}
+
+
+	public function changeCurrency($currencyCode)
+	{
+		$currency = Currency::byCode($currencyCode)->firstOrFail();
+		session(['currency' => $currency->code]);
 		return redirect()->back();
 	}
 

@@ -21,7 +21,8 @@
                 <tbody>
 
                 {{--@foreach($order->products as $product)--}}
-                @foreach($order->products()->with('category')->get() as $product)
+                {{--@foreach($order->products()->with('category')->get() as $product)--}}
+                @foreach($order->products as $product)
 
                     {{--{{dd($product->pivot)}}--}}
 
@@ -32,7 +33,7 @@
                                 {{$product->name}}
                             </a>
                         </td>
-                        <td><span class="badge">{{$product->pivot->count}}</span>
+                        <td><span class="badge">{{$product->countInOrder}}</span>
                             <div class="btn-group form-inline">
 
                                 <form action="{{route('basket-remove', [$product])}}" method="post">
@@ -50,7 +51,7 @@
                             </div>
                         </td>
                         <td>{{$product->price}} руб.</td>
-                        <td>{{$product->getPriceForCount()}} руб.</td>
+                        <td>{{$product->price * $product->countInOrder}} руб.</td>
                     </tr>
 
                 @endforeach

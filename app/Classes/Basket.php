@@ -5,6 +5,7 @@ namespace App\Classes;
 use App\Mail\OrderCreated;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\CurrencyConversion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -15,40 +16,45 @@ class Basket
 
 	public function __construct($createOrder = false)
 	{
-		$orderId = session('orderId');
+		$order = session('order'); // нам нужен весь заказ в сессии
 
-		if( is_null($orderId) && $createOrder ){
 
+		/*$order->currency_id = CurrencyConversion::getCurrentCurrencyFromSession()->id;
+		session(['order' => $order]);*/
+
+		if( is_null($order) && $createOrder ){
 			$data = [];
-
 			if(Auth::check()){
-				$data['user_id'] = Auth::id();
+				$data['user_id'] = Auth::id(); // ID юзера, который делает заказ, для таблицы Orders
 			}
+			$data['currency_id'] = CurrencyConversion::getCurrentCurrencyFromSession()->id; // текущая валюта для таблицы Orders
 
-			$this->order = Order::create($data); //создаем заказ в таблице "orders"
-			session(['orderId' => $this->order->id]); // id этого заказа закидываем в сессию, чтобы доставать его на других страницах
-
+			$this->order = new Order($data);
+			//$this->order = Order::create($data); //создаем заказ в таблице "orders"
+			session(['order' => $this->order]); // заказ закидываем в сессию, чтобы доставать его на других страницах
 		} else {
-			$this->order = Order::findOrFail($orderId);
+			$this->order = $order;
 		}
 	}
 
 	public function countAvailable($updateCount = false)
 	{
-
+		$products = collect([]);
 		foreach ($this->order->products as $orderProduct)
 		{
-			if( $orderProduct->count < $this->getPivotRow($orderProduct)->count ) {
+			$product = Product::find($orderProduct->id);
+			if ($orderProduct->countInOrder > $product->count) {
 				return false;
 			}
 
-			if($updateCount) {
-				$orderProduct->count -= $this->getPivotRow($orderProduct)->count;
+			if ($updateCount) {
+				$product->count -= $orderProduct->countInOrder;
+				$products->push($product);
 			}
 		}
 
-		if($updateCount) {
-			$this->order->products->map->save();
+		if ($updateCount) {
+			$products->map->save();
 		}
 
 		return true;
@@ -60,10 +66,10 @@ class Basket
 		return $this->order;
 	}
 
-	public function getPivotRow($product)
+	/*public function getPivotRow($product)
 	{
 		return $this->order->products()->where('product_id', $product->id)->first()->pivot;
-	}
+	}*/
 
 
 	public function saveOrder($name, $phone, $email)
@@ -72,22 +78,28 @@ class Basket
 			return false;
 		}
 
+		$this->order->saveOrder($name, $phone);
 		// Send an Email message
 		Mail::to($email)->send( new OrderCreated($name, $this->getOrder()) );
 
-		return $this->order->saveOrder($name, $phone);
+		return true;
 	}
 
 	public function removeProduct(Product $product)
 	{
-		if( $this->order->products->contains($product->id) ) {
-			$pivotRow = $this->order->products()->where('product_id', $product->id)->first()->pivot; // pivot
+		if( $this->order->products->contains($product) ) {
 
-			if( $pivotRow->count < 2 ) {
-				$this->order->products()->detach($product->id);
+			//$pivotRow = $this->order->products()->where('product_id', $product->id)->first()->pivot; // pivot
+
+			$pivotRow = $this->order->products->where('id', $product->id)->first();
+
+			if( $pivotRow->countInOrder < 2 ) {
+				//$this->order->products()->detach($product->id);
+				$this->order->products->pop($product);
 			} else {
-				$pivotRow->count--;
-				$pivotRow->update();
+				//$pivotRow->count--;
+				//$pivotRow->update();
+				$pivotRow->countInOrder--;
 			}
 
 		}
@@ -96,18 +108,21 @@ class Basket
 	public function addProduct(Product $product)
 	{
 		// Есть ли уже текущий продукт в корзине
-		if( $this->order->products->contains($product->id) ) {
+		if( $this->order->products->contains($product) ) {
 
 			//$pivotRow = $order->products()->where('product_id', $productId)->first();  // модель
-			$pivotRow = $this->order->products()->where('product_id', $product->id)->first()->pivot; // pivot
-			$pivotRow->count++;
+			//$pivotRow = $this->order->products()->where('product_id', $product->id)->first()->pivot; // pivot
+			//$pivotRow->count++;
 
-			if( $pivotRow->count > $product->count ) {
+
+			$pivotRow = $this->order->products->where('id', $product->id)->first();
+
+			if( $pivotRow->countInOrder >= $product->count ) {
 				return false;
 			}
+			$pivotRow->countInOrder++;
 
-			$pivotRow->update();
-
+			//$pivotRow->update();
 		} else {
 
 			if( $product->count == 0 ) {
@@ -118,11 +133,12 @@ class Basket
 			 * Прикрепляем к конкретному заказу конкретный товар в промежуточной таблице.
 			 * https://laravel.com/docs/5.8/eloquent-relationships#updating-many-to-many-relationships
 			 */
-			$this->order->products()->attach($product->id);
+			//$this->order->products()->attach($product->id);
 
+
+			$product->countInOrder = 1;
+			$this->order->products->push($product);
 		}
-
-		Order::changeFullSum($product->price);
 
 		return true;
 	}

@@ -9,6 +9,9 @@
 
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/starter-template.css" rel="stylesheet">
     <link href="/css/custom-style.css" rel="stylesheet">
@@ -26,6 +29,16 @@
                 <li @routeactive('basket*')><a href="{{route('basket')}}">{{__('main.cart')}}</a></li>
                 <li><a href="{{ route('locale', __('main.set_lang')) }}">{{__('main.set_lang')}}</a></li>
                 {{--<li><a href="http://laravel-diplom-1.rdavydov.ru/reset">Сбросить проект в начальное состояние</a></li>--}}
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Currency <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        @foreach( App\Services\CurrencyConversion::getCurrencies() as $currency )
+                            <li><a href="{{ route('currency', $currency->code) }}">{{ $currency->symbol }}</a></li>
+                        @endforeach
+                    </ul>
+                </li>
+
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
