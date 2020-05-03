@@ -86,3 +86,5 @@ Route::middleware(['set_locale'])->group(function (){
 	Route::get('{category}/{product}', 'MainController@product')->name('product');
 
 });
+
+/*test*/
