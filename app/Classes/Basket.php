@@ -22,6 +22,7 @@ class Basket
 		/*$order->currency_id = CurrencyConversion::getCurrentCurrencyFromSession()->id;
 		session(['order' => $order]);*/
 
+
 		if( is_null($order) && $createOrder ){
 			$data = [];
 			if(Auth::check()){
@@ -35,6 +36,7 @@ class Basket
 		} else {
 			$this->order = $order;
 		}
+
 	}
 
 	public function countAvailable($updateCount = false)
@@ -95,7 +97,16 @@ class Basket
 
 			if( $pivotRow->countInOrder < 2 ) {
 				//$this->order->products()->detach($product->id);
-				$this->order->products->pop($product);
+				//dd($this->order->products);
+				//$this->order->products->pop($product);
+
+
+				$id = $product->id;
+				$key = $this->order->products->search(function($item) use($id) {
+					return $item->id == $id;
+				});
+				$this->order->products->pull($key);
+
 			} else {
 				//$pivotRow->count--;
 				//$pivotRow->update();
@@ -107,7 +118,7 @@ class Basket
 
 	public function addProduct(Product $product)
 	{
-		// Есть ли уже текущий продукт в корзине
+		// Метод contains() определяет, содержит ли коллекция заданное значение
 		if( $this->order->products->contains($product) ) {
 
 			//$pivotRow = $order->products()->where('product_id', $productId)->first();  // модель
@@ -136,7 +147,9 @@ class Basket
 			//$this->order->products()->attach($product->id);
 
 
+
 			$product->countInOrder = 1;
+			// В свойство этого класса Order, в ячейку 'products' помещаем очередной товар
 			$this->order->products->push($product);
 		}
 

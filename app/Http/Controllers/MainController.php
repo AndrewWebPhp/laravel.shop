@@ -20,6 +20,8 @@ class MainController extends Controller
 
 	    //\Debugbar::info('my info');
 
+	    //session()->forget('order');
+
 
 	    // some test comment
 	    //$productsQuery = Product::query(); // аналог Product::get()
